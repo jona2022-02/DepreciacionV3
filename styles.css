@@ -1,0 +1,126 @@
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --dark-color: #2c3e50;
+    --light-color: #ecf0f1;
+}
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    padding: 1.5rem;
+}
+
+.form-control, .form-select {
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    border: 1px solid #ced4da;
+    transition: all 0.3s;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+.btn-outline-secondary:hover {
+    transform: translateY(-2px);
+}
+
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: var(--dark-color);
+    color: white;
+    font-weight: 600;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+#resultadoContainer {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.nav-tabs .nav-link {
+    color: var(--dark-color);
+    font-weight: 600;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilo para valores monetarios */
+.monetary {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+
+/* Estilo para resumen */
+.resumen-item {
+    border-bottom: 1px solid #eee;
+    padding: 0.5rem 0;
+}
+
+.resumen-item:last-child {
+    border-bottom: none;
+}
+
+.resumen-label {
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .card-header {
+        padding: 1rem;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+}

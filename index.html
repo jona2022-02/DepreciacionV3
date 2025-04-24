@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Depreciación de Activos</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- CSS Personalizado -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container py-5">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h1 class="h3 mb-0"><i class="fas fa-calculator me-2"></i>Calculadora de Depreciación</h1>
+            </div>
+            <div class="card-body">
+                <form id="depreciacionForm">
+                    <div class="row g-3">
+        
+                        <!-- NUEVO CAMPO: Contribuyente -->
+                        <div class="col-12">
+                            <label for="nombreContribuyente" class="form-label"><i class="fas fa-user me-2"></i>Nombre del Contribuyente</label>
+                            <input type="text" class="form-control" id="nombreContribuyente" placeholder="Nombre de la persona o empresa" required>
+                        </div>
+        
+                        <div class="col-md-6">
+                            <label for="fechaCompra" class="form-label"><i class="fas fa-calendar-alt me-2"></i>Fecha de
+                                Compra</label>
+                            <input type="date" class="form-control" id="fechaCompra" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="creditoFiscal" class="form-label"><i class="fas fa-file-invoice me-2"></i>Número
+                                de Crédito Fiscal</label>
+                            <input type="text" class="form-control" id="creditoFiscal" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="descripcionActivo" class="form-label"><i
+                                    class="fas fa-box-open me-2"></i>Descripción del Activo</label>
+                            <textarea class="form-control" id="descripcionActivo" rows="2" required></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="montoCompra" class="form-label"><i class="fas fa-dollar-sign me-2"></i>Monto de
+                                la Compra</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="montoCompra" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="aniosDepreciacion" class="form-label"><i class="fas fa-clock me-2"></i>Años de
+                                Depreciación</label>
+                            <select class="form-select" id="aniosDepreciacion" required>
+                                <option value="" selected disabled>Seleccione los años...</option>
+                                <option value="1">1 año</option>
+                                <option value="2">2 años</option>
+                                <option value="3">3 años</option>
+                                <option value="4">4 años</option>
+                                <option value="5">5 años</option>
+                                <option value="6">6 años</option>
+                                <option value="7">7 años</option>
+                                <option value="8">8 años</option>
+                                <option value="9">9 años</option>
+                                <option value="10">10 años</option>
+                                <option value="20">20 años</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="estadoActivo" class="form-label"><i class="fas fa-star me-2"></i>Estado del
+                                Activo</label>
+                            <select class="form-select" id="estadoActivo" required>
+                                <option value="nuevo">Nuevo</option>
+                                <option value="usado">Usado</option>
+                            </select>
+                        </div>
+                    </div>
+        
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button type="reset" class="btn btn-outline-secondary me-md-2"><i
+                                class="fas fa-eraser me-2"></i>Limpiar</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-calculator me-2"></i>Calcular
+                            Depreciación</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div id="resultadoContainer" class="mt-5" style="display: none;">
+            <div class="card shadow-lg mb-4">
+                <div class="card-header bg-info text-white">
+                    <h2 class="h4 mb-0"><i class="fas fa-info-circle me-2"></i>Resumen del Activo</h2>
+                </div>
+                <div class="card-body" id="resumenActivo"></div>
+            </div>
+
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white">
+                    <h2 class="h4 mb-0"><i class="fas fa-table me-2"></i>Tabla de Depreciación</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover" id="tablaDepreciacion">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Año</th>
+                                    <th>Fecha de Adquisición</th>
+                                    <th>Descripción</th>
+                                    <th>Número de Documento</th>
+                                    <th>Valor de Adquisición</th>
+                                    <th>Depreciación de Años Anteriores</th>
+                                    <th>Cuota Mensual</th>
+                                    <th>Enero</th>
+                                    <th>Febrero</th>
+                                    <th>Marzo</th>
+                                    <th>Abril</th>
+                                    <th>Mayo</th>
+                                    <th>Junio</th>
+                                    <th>Julio</th>
+                                    <th>Agosto</th>
+                                    <th>Septiembre</th>
+                                    <th>Octubre</th>
+                                    <th>Noviembre</th>
+                                    <th>Diciembre</th>
+                                    <th>Depreciación del Presente Ejercicio</th>
+                                    <th>Depreciación Acumulada</th>
+                                    <th>Valor Actual</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Las filas de la tabla se insertarán aquí con JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                <button class="btn btn-success" onclick="exportToExcel()">Exportar a Excel <i
+                        class="fas fa-file-excel ms-2"></i></button>
+                <button class="btn btn-danger" onclick="exportToPDF()">Exportar a PDF <i
+                        class="fas fa-file-pdf ms-2"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de "Elaborado por" y contacto -->
+    <div class="container mt-5">
+        <div class="card shadow-lg">
+            <div class="card-header bg-dark text-white">
+                <h2 class="h4 mb-0"><i class="fas fa-user me-2"></i>Elaborado por Jonathan Hernandez</h2>
+            </div>
+            <div class="card-body text-center">
+                <p>Contáctame:</p>
+                <a href="https://wa.me/50373532012" target="_blank" class="btn btn-success me-2">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <!-- Enlace mailto con el correo para abrir el cliente de correo predeterminado -->
+                <a href="mailto:alexanderhernandz78@gmail.com?subject=Consulta sobre Depreciación" class="btn btn-danger">
+                    <i class="fas fa-envelope"></i> Correo Electrónico
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- SheetJS para exportar a Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+    <!-- jsPDF para exportar a PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Script personalizado -->
+    <script src="script.js"></script>
+</body>
+
+</html>
