@@ -115,7 +115,7 @@ function mostrarResumen(fechaCompra, creditoFiscal, descripcion, monto, años, e
 
 
 
-    function generarTablaDepreciacion(fechaAdquisicion, diaAdquisicion, mesAdquisicion, añoAdquisicion, creditoFiscal, descripcion, valorAdquisicion, años, cuotaAnual, cuotaMensual, cuotaDiaria, depreciacionAnterior, estadoActivo) {
+function generarTablaDepreciacion(fechaAdquisicion, diaAdquisicion, mesAdquisicion, añoAdquisicion, creditoFiscal, descripcion, valorAdquisicion, años, cuotaAnual, cuotaMensual, cuotaDiaria, depreciacionAnterior, estadoActivo) {
     tablaDepreciacion.innerHTML = '';
     let depreciacionAcumulada = parseFloat(depreciacionAnterior.toFixed(2));
     let depreciacionAcumuladaAnterior = parseFloat(depreciacionAnterior.toFixed(2));
@@ -124,24 +124,35 @@ function mostrarResumen(fechaCompra, creditoFiscal, descripcion, monto, años, e
     let cuotaDiariaFixed = parseFloat(cuotaDiaria.toFixed(2));
 
     const totalMeses = años * 13;
-    const fechaInicio = new Date(añoAdquisicion, mesAdquisicion - 1, diaAdquisicion);
+    const fechaInicio = new Date(añoAdquisicion, mesAdquisicion, diaAdquisicion);
     let fecha = new Date(fechaInicio);
     let añoActual = fecha.getFullYear();
     let depreciacionPresenteEjercicio = 0;
     let mesesDelAnio = Array(12).fill(null);
     let cuotasAplicadas = 0;
 
-    while (cuotasAplicadas < totalMeses) {
+    while (cuotasAplicadas < totalMeses && depreciacionAcumulada < valorAdquisicionFixed) {
         let valorMes = 0;
         const mesIndex = fecha.getMonth();
 
         if (cuotasAplicadas === 0) {
+            // Primer mes - cálculo proporcional
             const diasRestantes = 30 - diaAdquisicion + 1;
             valorMes = parseFloat((cuotaDiariaFixed * diasRestantes).toFixed(2));
-        } else if ((depreciacionAcumulada + cuotaMensualFixed) >= valorAdquisicionFixed || cuotasAplicadas === totalMeses - 1) {
-            valorMes = parseFloat((valorAdquisicionFixed - depreciacionAcumulada).toFixed(2));
+            
+            // Asegurar que no exceda el valor total
+            if (depreciacionAcumulada + valorMes > valorAdquisicionFixed) {
+                valorMes = valorAdquisicionFixed - depreciacionAcumulada;
+            }
         } else {
-            valorMes = cuotaMensualFixed;
+            // Meses subsiguientes
+            const depreciacionRestante = valorAdquisicionFixed - depreciacionAcumulada;
+            
+            if (depreciacionRestante <= cuotaMensualFixed) {
+                valorMes = parseFloat(depreciacionRestante.toFixed(2));
+            } else {
+                valorMes = cuotaMensualFixed;
+            }
         }
 
         depreciacionPresenteEjercicio += valorMes;
@@ -154,7 +165,7 @@ function mostrarResumen(fechaCompra, creditoFiscal, descripcion, monto, años, e
         const nuevoAnio = siguienteMes.getFullYear();
         const cambioDeAño = nuevoAnio !== añoActual;
 
-        if (cambioDeAño || cuotasAplicadas === totalMeses) {
+        if (cambioDeAño || cuotasAplicadas === totalMeses || depreciacionAcumulada >= valorAdquisicionFixed) {
             const fila = document.createElement('tr');
             let valorActual = parseFloat((valorAdquisicionFixed - depreciacionAcumulada).toFixed(2));
             if (valorActual < 0) valorActual = 0;
@@ -174,7 +185,7 @@ function mostrarResumen(fechaCompra, creditoFiscal, descripcion, monto, años, e
             `;
             tablaDepreciacion.appendChild(fila);
 
-            // 🔁 ACTUALIZA para el siguiente año
+            // Actualiza para el siguiente año
             depreciacionAcumuladaAnterior = depreciacionAcumulada;
             mesesDelAnio = Array(12).fill(null);
             depreciacionPresenteEjercicio = 0;
@@ -184,6 +195,7 @@ function mostrarResumen(fechaCompra, creditoFiscal, descripcion, monto, años, e
         fecha = siguienteMes;
     }
 }
+
 
 
 
@@ -271,7 +283,7 @@ function mostrarResumen(fechaCompra, creditoFiscal, descripcion, monto, años, e
             }
         });
     };
-    
-
-
+    document.getElementById('btnLimpiar').addEventListener('click', function() {
+        location.reload(); // Recarga la página
+    });
 });
