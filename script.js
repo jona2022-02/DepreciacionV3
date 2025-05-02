@@ -123,7 +123,7 @@ function mostrarResumen(fechaCompra, creditoFiscal, descripcion, monto, años, e
     let cuotaMensualFixed = parseFloat(cuotaMensual.toFixed(2));
     let cuotaDiariaFixed = parseFloat(cuotaDiaria.toFixed(2));
 
-    const totalMeses = años * 12;
+    const totalMeses = años * 13;
     const fechaInicio = new Date(añoAdquisicion, mesAdquisicion - 1, diaAdquisicion);
     let fecha = new Date(fechaInicio);
     let añoActual = fecha.getFullYear();
